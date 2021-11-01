@@ -13,6 +13,7 @@ class SingleList:
             return str(self.val)
 
     def __init__(self, *args) -> None:
+        '''初始化此单链表，可以使用任意 值/迭代器 进行初始化'''
         # 为了简化逻辑，这里仅维护头指针
         self.__head: SingleList.Node = None
 
@@ -20,7 +21,7 @@ class SingleList:
             self.__iadd__(i)
 
     def append(self, val: Any, *args) -> None:
-        '''添加元素'''
+        '''在此单链表末尾添加元素。若元素也是一个迭代器，则不对其进行解包，语义与 Python 内置列表相同'''
         if not self.__head:
             self.__head = SingleList.Node(val)
         else:
@@ -31,11 +32,11 @@ class SingleList:
     push = append
 
     def empty(self) -> bool:
-        '''单链表是否为空'''
+        '''检测此单链表是否为空'''
         return self.__head is None
 
     def length(self) -> int:
-        '''单链表的长度，也可以使用 len() 获取'''
+        '''计算此单链表的长度'''
         __length = 0
         for i in self:
             __length += 1
@@ -43,21 +44,21 @@ class SingleList:
     __len__ = length
 
     def insert(self, n: int, val: Any) -> None:
-        '''在位置 n 后添加一元素 val'''
+        '''在此链表位置 n 的元素后添加一元素 val'''
         __p = self.__node(n)
         __tmp = __p.next
         __p.next = SingleList.Node(val)
         __p.next.next = __tmp
 
     def add(self, other: Iterable | Any) -> SingleList:
-        '''与 other 进行连接，若 other 是一迭代器，则将其元素添加至单链表'''
+        '''此处的 add 方法语义是与迭代器或值做加法运算，此单链表的特殊方法 __add__ 即是使用此方法'''
         __list = self.copy()
         __list.__iadd__(other)
         return __list
     __add__ = add
 
     def pop(self) -> Any:
-        '''删除一个元素，返回值是该元素的值'''
+        '''删除此单链表末尾的一个元素，并返回该元素的值'''
         for i in self.__nodes():
             if not i.next.next:
                 __re = i.next.val
@@ -74,13 +75,14 @@ class SingleList:
                 raise IndexError('pop from empty list')
 
     def copy(self) -> SingleList:
-        '''返回自身的拷贝'''
+        '''获取此单链表的拷贝'''
         __list = SingleList()
         for i in self:
             __list.append(i)
         return __list
 
     def get(self, n: slice | int) -> Any:
+        '''此处的 get 方法语义与特殊方法 __getitem__ 相同，可以进行伪随机访问和切片的操作'''
         if type(n) is slice:
             return self.get_n(n)
         else:
@@ -88,6 +90,7 @@ class SingleList:
     __getitem__ = get
 
     def set(self, n: slice | int, val: Any) -> None:
+        '''此处的 set 方法语义与特殊方法 __setitem__ 相同，进行伪随机赋值和伪切片赋值的操作'''
         if type(n) is slice:
             self.set_n(n, val)
         else:
@@ -95,6 +98,7 @@ class SingleList:
     __setitem__ = set
 
     def remove(self, n: int | Node) -> None:
+        '''删除位置为 n 或节点指针为 n 的元素'''
         if type(n) is SingleList.Node:
             __p = n
         else:
@@ -110,7 +114,7 @@ class SingleList:
             __p.next = __tmp
 
     def pop_n(self, n: int) -> SingleList:
-        '''删除 n 个元素，返回由该 n 个元素组成的单链表'''
+        '''删除此单链表末尾 n 个元素，返回由该 n 个元素组成的逆序单链表'''
         __list = SingleList()
         __from = self.copy()
         if n > self.length():
@@ -121,14 +125,14 @@ class SingleList:
     __sub__ = pop_n
 
     def copy_n(self, n: int) -> SingleList:
-        '''返回自身的 n 次拷贝'''
+        '''获取此单链表的 n 重拷贝'''
         __list = SingleList()
         for i in range(n):
             __list.__iadd__(self.copy())
         return __list
 
     def get_n(self, n: slice) -> SingleList:
-        '''切片操作，返回由切片的元素组成的 SingleList'''
+        '''切片方法，返回切片元素组成的单链表'''
         __list = SingleList()
         n = n.indices(self.length())
         for i in range(n[0], n[1], n[2]):
@@ -136,12 +140,13 @@ class SingleList:
         return __list
 
     def set_n(self, n: slice, other: Iterable) -> None:
-        '''对 n 对应的切片元素进行赋值操作，other 为任意的迭代器'''
+        '''切片赋值方法，将切片的元素赋值为迭代器 other 中的各值'''
         n = n.indices(self.length())
         for i, j in zip(range(n[0], n[1], n[2]), other):
             self.__node(i).val = j
 
     def remove_n(self, n: slice) -> None:
+        '''删除切片对应的元素'''
         __n = SingleList()
         n = n.indices(self.length())
         for i in range(n[0], n[1], n[2]):
@@ -190,13 +195,14 @@ class SingleList:
         return f'[{__str}]'
 
     def __tail(self) -> Node:
+        '''获取此单链表的尾指针'''
         __p = self.__head
         while __p.next:
             __p = __p.next
         return __p
 
     def __node(self, n: int) -> Node:
-        '''返回位于 n 的节点指针'''
+        '''获取此单链表位于 n 的结点指针'''
         for i in self.__nodes():
             if not n:
                 return i
@@ -205,14 +211,14 @@ class SingleList:
             raise IndexError(f'list index out of range')
 
     def __nodes(self) -> Generator[Node]:
-        '''返回包含所有节点指针的迭代器'''
+        '''获取一个包含所有节点指针的迭代器'''
         __p = self.__head
         while __p:
             yield __p
             __p = __p.next
 
     def __iter__(self) -> Generator:
-        '''返回所有节点的 *值*'''
+        '''返回所有节点的值'''
         __p = self.__head
         while __p:
             yield __p.val
