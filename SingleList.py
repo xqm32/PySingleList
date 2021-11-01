@@ -149,7 +149,7 @@ class SingleList:
         for i in __n:
             self.remove(i)
 
-    def __delitem__(self, n: slice | int):
+    def __delitem__(self, n: slice | int) -> None:
         if type(n) is slice:
             return self.remove_n(n)
         else:
@@ -161,7 +161,7 @@ class SingleList:
         __list.__iadd__(self)
         return __list
 
-    def __iadd__(self, other: Iterable | Any):
+    def __iadd__(self, other: Iterable | Any) -> SingleList:
         if isinstance(other, Iterable):
             for i in other:
                 self.append(i)
@@ -220,7 +220,19 @@ class SingleList:
 
 
 if __name__ == '__main__':
-    A = SingleList(0, 1, 2, 3, 4, 5)
-    del A[0:4]
+    A = SingleList()
+    A += 1, 2, 3
     A.append(SingleList(1, 2, 3))
+    A.pop()
+    A += 4, 5, 6
+    A[-2:] = 7, 8
+    del A[:-2]
     print(A)
+    B = []
+    B += 1, 2, 3
+    B.append([1, 2, 3])
+    B.pop()
+    B += 4, 5, 6
+    B[-2:] = 7, 8
+    del B[:-2]
+    print(B)
