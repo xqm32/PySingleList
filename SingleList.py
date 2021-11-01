@@ -12,7 +12,7 @@ class SingleList:
         def __str__(self):
             return str(self.val)
 
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         # 为了简化逻辑，这里仅维护头指针
         self.__head: SingleList.Node = None
 
@@ -196,6 +196,7 @@ class SingleList:
         return __p
 
     def __node(self, n: int) -> Node:
+        '''返回位于 n 的节点指针'''
         for i in self.__nodes():
             if not n:
                 return i
@@ -204,12 +205,14 @@ class SingleList:
             raise IndexError(f'list index out of range')
 
     def __nodes(self) -> Generator[Node]:
+        '''返回包含所有节点指针的迭代器'''
         __p = self.__head
         while __p:
             yield __p
             __p = __p.next
 
     def __iter__(self) -> Generator:
+        '''返回所有节点的 *值*'''
         __p = self.__head
         while __p:
             yield __p.val
@@ -219,4 +222,5 @@ class SingleList:
 if __name__ == '__main__':
     A = SingleList(0, 1, 2, 3, 4, 5)
     del A[0:4]
+    A.append(SingleList(1, 2, 3))
     print(A)
