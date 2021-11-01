@@ -20,6 +20,7 @@ class SingleList:
                 self.__iadd__(i)
 
     def append(self, other, *args) -> None:
+
         if not self.__head:
             self.__head = SingleList.Node(other)
             self.__tail = self.__head
@@ -81,12 +82,38 @@ class SingleList:
             __list.append(i)
         return __list
 
-    def get(self, n: int) -> Any:
-        return self.__noden(n).val
+    def copyn(self, n: int):
+        __list = SingleList()
+        for i in range(n):
+            __list.__iadd__(self.copy())
+        return __list
+
+    def slice(self, n: slice):
+        __list = SingleList()
+        n = n.indices(self.length())
+        for i, j in zip(range(0, n[1]), self):
+            if i >= n[0] and not (i-n[0]) % n[2]:
+                __list.append(j)
+        return __list
+
+    def setn(self, n: slice, other) -> None:
+        n, other = n.indices(self.length()), iter(other)
+        for i, j in zip(range(0, n[1]), self.__nodes()):
+            if i >= n[0] and not (i-n[0]) % n[2]:
+                j.val = next(other)
+
+    def get(self, n) -> Any:
+        if type(n) is slice:
+            return self.slice(n)
+        else:
+            return self.__noden(n).val
     __getitem__ = get
 
-    def set(self, n: int, val: Any) -> None:
-        self.__noden(n).val = val
+    def set(self, n, val: Any) -> None:
+        if type(n) is slice:
+            self.setn(n, val)
+        else:
+            self.__noden(n).val = val
     __setitem__ = set
 
     def remove(self, n: int):
@@ -125,6 +152,9 @@ class SingleList:
         for i in range(n):
             self.pop()
         return self
+
+    def __imul__(self, n: int):
+        self.__iadd__(self.copyn(n-1))
 
     def __str__(self) -> str:
         __str = ''
@@ -172,7 +202,11 @@ if __name__ == '__main__':
     C += 6
     print(f'C: {C}')
     # 长度的两种获取方法
-    C -= 7
+    C -= 1
     D = C.length()
     E = len(C)
     print(f'D: {D}, E: {E}')
+    F = C[1:4:2]
+    print(f'F: {F}')
+    C[1:3] = [9, 8]
+    print(f'C: {C}, {C[1:3]}')
