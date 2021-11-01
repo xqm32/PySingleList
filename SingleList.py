@@ -29,6 +29,7 @@ class SingleList:
 
         for i in args:
             self.append(i)
+    push = append
 
     def empty(self) -> bool:
         return self.__head is None
@@ -167,10 +168,11 @@ if __name__ == '__main__':
     print(f'C: {C}')
     # 添加元素的两种方法
     C.append(4)
-    C += 5
+    C.push(5)
+    C += 6
     print(f'C: {C}')
     # 长度的两种获取方法
-    C -= 2
+    C -= 7
     D = C.length()
     E = len(C)
     print(f'D: {D}, E: {E}')
