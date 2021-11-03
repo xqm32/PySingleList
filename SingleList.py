@@ -43,12 +43,15 @@ class SingleList:
         return __length
     __len__ = length
 
-    def insert(self, n: int, val: Any) -> None:
+    def insert(self, n: int | Node, val:  Any) -> None:
         '''在此链表位置 n 的元素后添加一元素 val'''
-        __p = self.__node(n)
-        __tmp = __p.next
-        __p.next = SingleList.Node(val)
-        __p.next.next = __tmp
+        if type(n) is SingleList.Node:
+            __temp = n.next
+            n.next = SingleList.Node(val)
+            n.next.next = __temp
+        else:
+            __p = self.__node(n)
+            self.insert(__p, val)
 
     def add(self, other: Iterable | Any) -> SingleList:
         '''此处的 add 方法语义是与迭代器或值做加法运算，此单链表的特殊方法 __add__ 即是使用此方法'''
@@ -141,9 +144,17 @@ class SingleList:
 
     def set_n(self, n: slice, other: Iterable) -> None:
         '''切片赋值方法，将切片的元素赋值为迭代器 other 中的各值'''
+        if not isinstance(other, Iterable):
+            raise TypeError('can only assign an iterable')
         n = n.indices(self.length())
+        other = iter(other)
+        __p: SingleList.Node = None
         for i, j in zip(range(n[0], n[1], n[2]), other):
-            self.__node(i).val = j
+            __p = self.__node(i)
+            __p.val = j
+        for j in other:
+            self.insert(__p, j)
+            __p = __p.next
 
     def remove_n(self, n: slice) -> None:
         '''删除切片对应的元素'''
@@ -193,6 +204,7 @@ class SingleList:
             else:
                 __str += f'{i}'
         return f'[{__str}]'
+    __repr__ = __str__
 
     def __tail(self) -> Node:
         '''获取此单链表的尾指针'''
@@ -234,11 +246,3 @@ if __name__ == '__main__':
     A[-2:] = 7, 8
     del A[:-2]
     print(A)
-    B = []
-    B += 1, 2, 3
-    B.append([1, 2, 3])
-    B.pop()
-    B += 4, 5, 6
-    B[-2:] = 7, 8
-    del B[:-2]
-    print(B)
