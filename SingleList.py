@@ -111,7 +111,7 @@ class SingleList:
             self.__head = __p.next
             del __p
         else:
-            __p = self.__node(n-1)
+            __p = self.__prev(n)
             __tmp = __p.next.next
             del __p.next
             __p.next = __tmp
@@ -146,12 +146,13 @@ class SingleList:
         '''切片赋值方法，将切片的元素赋值为迭代器 other 中的各值'''
         if not isinstance(other, Iterable):
             raise TypeError('can only assign an iterable')
-        n = n.indices(self.length())
-        other = iter(other)
+        i, n, other = 0, n.indices(self.length()), iter(other)
         __p: SingleList.Node = None
         for i, j in zip(range(n[0], n[1], n[2]), other):
             __p = self.__node(i)
             __p.val = j
+        # 若无须删除或增加，以下两条不会执行
+        self.remove_n(slice(i+1, n[1], n[2]))
         for j in other:
             self.insert(__p, j)
             __p = __p.next
@@ -159,6 +160,7 @@ class SingleList:
     def remove_n(self, n: slice) -> None:
         '''删除切片对应的元素'''
         __n = SingleList()
+        #! 这里使用指针删除，以防止通过下标删除时位置不一的错误
         n = n.indices(self.length())
         for i in range(n[0], n[1], n[2]):
             __n.append(self.__node(i))
@@ -213,14 +215,26 @@ class SingleList:
             __p = __p.next
         return __p
 
+    def __prev(self, n: int | Node) -> Node:
+        '''获取此单链表位于 n 的节点的前一个指针'''
+        if type(n) is int:
+            return self.__node(n-1)
+        for i in self.__nodes():
+            if i.next is n:
+                return i
+        else:
+            raise IndexError('no such node in this single list')
+
     def __node(self, n: int) -> Node:
-        '''获取此单链表位于 n 的结点指针'''
+        '''获取此单链表位于 n 的节点指针'''
+        if n < 0:
+            raise IndexError('list index out of range')
         for i in self.__nodes():
             if not n:
                 return i
             n -= 1
         else:
-            raise IndexError(f'list index out of range')
+            raise IndexError('list index out of range')
 
     def __nodes(self) -> Generator[Node]:
         '''获取一个包含所有节点指针的迭代器'''
